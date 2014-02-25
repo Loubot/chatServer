@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            var server = io.connect('http://localhost:1337');
+            server.on('connect',function(data){
+            	var nickname = prompt("What is your nickname?");
+            	server.emit('join', nickname);
+            });
+            function sendMessage() {
+            	var message = $('#message_input').val();
+            	
+            	server.emit('messages',message);
+            }
+            server.on('chat', function(data){
+            	$('#chatter').append("<p>"+ data.name+ ": " + data.message +"</p>");
+            });
+        </script>
+    </head>
+    <body>
+        <input type="text" id="message_input"/>
+        <button onclick="sendMessage()">send</button>
+        <div id="chatlog"></div>
+        <section id = "chatter"></section>
+    </body>
+</html>
