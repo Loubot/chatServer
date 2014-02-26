@@ -16,23 +16,23 @@ io.sockets.on('connection', function(client){
 		client.set('nickname', name);
 		redisClient.lrange("messages", 0,49, function(err, messages){
 			messages = messages.reverse();
-
-			messages.forEach(function(message){
-				message = JSON.parse(message);
-				client.emit('chat', message.name + ": " +message.data);
-			});
+			client.emit('joiningIn', messages);
+			// messages.forEach(function(message){
+			// 	message = JSON.parse(message);
+			// 	client.emit('chat', {name: message.name, message: message.data});
+			// });
 		});
 	});
 	client.on('messages',function(data){
 		client.get('nickname', function(err,name){
 			storeMessage(name, data);
-			client.broadcast.emit("chat", {name:name, message:data});
+			io.sockets.emit("chat", {name:name, message:data});
 		});
 		
 	});
 });
 
-var storeMessage = function(data, name){
+var storeMessage = function(name, data){
 	var message = JSON.stringify({ name: name, data: data });
 	redisClient.lpush("messages", message, function(err, response){
 		redisClient.ltrim("messages", 0,10);

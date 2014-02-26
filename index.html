@@ -1,28 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html sytle="height:100%;">
     <head>
-    		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript">
+        <script type="text/javascript" >
             var server = io.connect('http://localhost:1337');
             server.on('connect',function(data){
-            	var nickname = prompt("What is your nickname?");
-            	server.emit('join', nickname);
+                var nickname = prompt("What is your nickname?");
+                server.emit('join', nickname);
             });
             function sendMessage() {
-            	var message = $('#message_input').val();
-            	
-            	server.emit('messages',message);
+                var message = $('#message_input').val();
+                
+                server.emit('messages',message);
             }
             server.on('chat', function(data){
-            	$('#chatter').append("<p>"+ data.name+ ": " + data.message +"</p>");
+                $('#chatter').append("<p>"+ data.name+ ": " + data.message +"</p><hr>");
+            });
+            server.on('joiningIn', function(messages){
+                $('#chatter').empty();
+                messages.forEach(function(message){
+                 message = JSON.parse(message);
+                 $('#chatter').append(message.name +": " + message.data + "<hr>");
+                });
             });
         </script>
     </head>
-    <body>
-        <input type="text" id="message_input"/>
-        <button onclick="sendMessage()">send</button>
-        <div id="chatlog"></div>
-        <section id = "chatter"></section>
+    <body sytle="height:100%;">
+        <div style="height:97vh;width:10%;float:left;border-color:green;border-style:groove;" id="chatters">
+            <strong>Chatters</strong>
+        </div>
+        <div style="float:left;height:93vh;width:85%;border-style:groove;overflow:auto;" id="chatter">
+            
+        </div>        
+        <div style="float:left;width:88%;border-style:groove;" >
+            <input type="text" style="display:table-cell;width:92%;" id="message_input"/>
+            <button onclick="sendMessage()">send</button>
+        </div>
+        
     </body>
 </html>
